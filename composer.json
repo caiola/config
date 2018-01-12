@@ -18,12 +18,5 @@
         "exclude-from-classmap": [
             "**/Tests/"
         ]
-    },
-    "version": "v1.0.0",
-    "minimum-stability": "dev",
-    "extra": {
-        "branch-alias": {
-            "dev-master": "v1.0.1"
-        }
     }
 }
