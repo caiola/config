@@ -1,7 +1,9 @@
 {
     "name": "caiola/config",
+    "type": "library",
     "description": "Easy PHP config allows to configure your settings by allowing to read environment from operating system and public variables",
-    "license": "GPL",
+    "keywords": ["config", "configs", "configuration", "environment", "variables"],
+    "license": "MIT",
     "authors": [
         {
             "name": "Roberto Caiola",
@@ -13,7 +15,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Caiola\\Config\\": "src/Config"
+            "Caiola\\Config\\": "src/"
         },
         "exclude-from-classmap": [
             "**/Tests/"
