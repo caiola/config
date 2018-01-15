@@ -1,14 +1,13 @@
 <?php
 
-namespace Caiola;
+namespace Caiola\Config;
 
 /**
  * Configuration class that allows to read environment variables
  *
  * Class Config
- * @package Caiola
+ * @package Caiola\Config
  */
-
 class Config
 {
     static protected $instance        = null;    // Singleton instance
@@ -16,18 +15,6 @@ class Config
     static private   $env             = array(); // Environment variables
     static public    $use_environment = true;    // Use and read environment variables
     static public    $immutable       = true;    // If immutable is true then we cannot override environment variables
-
-    /**
-     * Config constructor.
-     */
-    public function __construct() {
-    }
-
-    /**
-     * Clone method
-     */
-    public function __clone() {
-    }
 
     /**
      * Get instance (singleton)
@@ -88,6 +75,42 @@ class Config
     }
 
     /**
+     * Get immutable property
+     *
+     * @return bool
+     */
+    public static function getImmutable() {
+        return self::$immutable;
+    }
+
+    /**
+     * Set immutable property
+     *
+     * @param boolean $value
+     */
+    public static function setImmutable($value) {
+        self::$immutable = $value;
+    }
+
+    /**
+     * Get use environment property
+     *
+     * @return bool
+     */
+    public static function getUseEnvironment() {
+        return self::$use_environment;
+    }
+
+    /**
+     * Use environment variables
+     *
+     * @param boolean $value
+     */
+    public static function setUseEnvironment($value) {
+        self::$use_environment = $value;
+    }
+
+    /**
      * Get configuration from environment variables and from local configured environment
      *
      * @param $key
@@ -97,7 +120,7 @@ class Config
         switch (true) {
             case self::$use_environment === false:
                 return isset(self::$public[$key]) ? self::$public[$key] : null;
-            case self::$use_environment === false && array_key_exists($key, self::$env):
+            case self::$use_environment === true && array_key_exists($key, self::$env):
                 return self::$env[$key];
             case self::$use_environment === false && array_key_exists($key, $_ENV):
                 return $_ENV[$key];
@@ -107,7 +130,7 @@ class Config
                 $env = getenv($key);
                 $value = isset(self::$public[$key]) ? self::$public[$key] : null;
 
-                return $env === false && self::$use_environment === false ? $value : $env;
+                return $env === false ? $value : $env;
         }
     }
 
@@ -168,7 +191,17 @@ class Config
      * @param mixed  $default
      * @return mixed
      */
-    public function getByKey($key, $default = null) {
+    public static function getByKey($key, $default = null) {
+
+        // Check for environment variables
+        if (strpos($key, '.') === false && !isset(self::$env[$key])) {
+            // Call automagic method __get()
+            $value = self::getInstance()->$key;
+            if ($value !== $default) {
+                return $value;
+            }
+        }
+
         $all_data = array(
             'env'    => self::$env,
             'public' => self::$public
@@ -203,6 +236,12 @@ class Config
             if ($value !== $default) {
                 return $value;
             }
+
+        }
+
+        if ($value === $default) {
+            // Call automagic method __get()
+            return self::getInstance()->$key;
         }
 
         return $value;
